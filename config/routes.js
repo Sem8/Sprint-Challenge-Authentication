@@ -3,6 +3,8 @@ const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 
+const secret = process.env.JWT_SECRET || 'Secret in routes'
+
 const userdb = require("../database/dbConfig.js");
 
 const { authenticate } = require("../auth/authenticate");
@@ -39,8 +41,8 @@ async function register(req, res) {
   try {
     const [id] = await userdb('users').insert(creds);
     const user = await userdb('users').where({ id }).first();
-    // const token = generateToken(user);
-    res.status(201).json({ user});    
+    const token = generateToken(user);
+    res.status(201).json({ user, token });    
   } catch (error) {
     res.status(500).json({ error: `Error while registering user: ${error}`});
   }
@@ -63,4 +65,15 @@ function getJokes(req, res) {
     .catch(err => {
       res.status(500).json({ message: "Error Fetching Jokes", error: err });
     });
+};
+
+generateToken = ({ id, username }) => {
+  const payload = {
+    subject: id,
+    username
+  };
+  const options = {
+    expiresIn: '1d'
+  };
+  return jwt.sign(payload, secret, options)
 }
