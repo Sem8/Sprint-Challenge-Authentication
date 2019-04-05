@@ -9,10 +9,11 @@ const userdb = require("../database/dbConfig.js");
 
 const { authenticate } = require("../auth/authenticate");
 
+
 module.exports = server => {
   server.post("/api/register", register);
   server.post("/api/login", login);
-  server.get("/api/jokes", authenticate, getJokes);
+  server.get('/api/jokes', authenticate, getJokes);
 };
 
 async function register(req, res) {
@@ -69,6 +70,7 @@ async function login(req, res) {
       res
         .status(200)
         .json({ message: `Welcome ${user.username} Your're logged in`, token });
+        localStorage.setItem('jsonWebToken', token)
     } else {
       res
         .status(401)
@@ -81,14 +83,19 @@ async function login(req, res) {
   }
 }
 
-function getJokes(req, res) {
-  const requestOptions = {
-    headers: { accept: "application/json" }
+async function getJokes(req, res) {
+  const token = localStorage.getItem('jsonWebToken');
+  // const requestOptions = {
+  //   headers: { accept: "application/json" }
+  // };
+   const requestOptions = {
+    headers: { authorization: token }
   };
 
   axios
     .get("https://icanhazdadjoke.com/search", requestOptions)
     .then(response => {
+      console.log(res)
       res.status(200).json(response.data.results);
     })
     .catch(err => {
