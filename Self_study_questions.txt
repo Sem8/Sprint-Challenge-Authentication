@@ -1,0 +1,20 @@
+1. What is the purpose of using sessions?
+
+1an. When using the cookies backend the session data can be read by the client. 
+
+
+2. What does bcrypt do to help us store passwords in a secure manner.
+
+2an. It hashes stored passwords and slows down the process of cracking passwords by rainbow table. It implements salting both manually 
+and automatically.
+
+
+3. What does bcrypt do to slow down attackers?
+
+3an. It hashes the password multiple times or rounds to make it harder for attackers because then the attacker needs to know the hashed password, 
+know the algorithm used, and how many rounds were used to generate the hash in the first place.
+
+4. What are the three parts of the JSON Web Token?
+
+4an. (1) Header shows algorithm used and token type, (2) Payload shows the request body as an object, (3) Signature is a string encoded by 
+base64 encoding the header and payload together, and then signing it with a secret.
