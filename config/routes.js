@@ -3,7 +3,8 @@ const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const secret = process.env.JWT_SECRET || "Secret in routes";
+// const secret = process.env.JWT_SECRET || "Secret in routes";
+const secret = require('../api/secrets.js').jwtSecret;
 
 const userdb = require("../database/dbConfig.js");
 
@@ -70,7 +71,8 @@ async function login(req, res) {
       res
         .status(200)
         .json({ message: `Welcome ${user.username} Your're logged in`, token });
-        localStorage.setItem('jsonWebToken', token)
+        console.log(res);
+        localStorage.setItem('jsonWebToken', res.data.token);
     } else {
       res
         .status(401)
@@ -84,18 +86,16 @@ async function login(req, res) {
 }
 
 async function getJokes(req, res) {
-  const token = localStorage.getItem('jsonWebToken');
-  // const requestOptions = {
-  //   headers: { accept: "application/json" }
-  // };
-   const requestOptions = {
-    headers: { authorization: token }
+ 
+  const requestOptions = {
+    headers: { accept: "application/json" }
   };
+  
 
   axios
     .get("https://icanhazdadjoke.com/search", requestOptions)
     .then(response => {
-      console.log(res)
+      // console.log(res)
       res.status(200).json(response.data.results);
     })
     .catch(err => {
