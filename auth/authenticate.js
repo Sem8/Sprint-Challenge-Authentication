@@ -1,25 +1,26 @@
 const jwt = require('jsonwebtoken');
 
-// const jwtKey =
-//   process.env.JWT_SECRET ||
-//   'add a .env file to root of project with the JWT_SECRET variable';
-const secrets = require('../api/secrets.js');
+const jwtKey =
+  process.env.JWT_SECRET ||
+  'add a .env file to root of project with the JWT_SECRET variable';
+// const secrets = require('../api/secrets.js');
 
 // quickly see what this file exports
 module.exports = {
-  authenticate,
+  authenticate, jwtKey
 };
 
 // implementation details
 function authenticate(req, res, next) {
 
-  const token = req.headers.authorization;  
+  // const token = req.get('Authorization'); 
+  const token = req.headers.authorization; 
 
   if (token) {
-    jwt.verify(token, secrets.jwtSecret, (err, decoded) => {
+    jwt.verify(token, jwtKey, (err, decoded) => {
       if (err) return res.status(401).json({ message: `Not reaching next ${err}`});
 
-      req.decodedJwt = decoded;
+      req.decoded = decoded;
 
       next();
     });

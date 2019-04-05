@@ -4,11 +4,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // const secret = process.env.JWT_SECRET || "Secret in routes";
-const secret = require('../api/secrets.js').jwtSecret;
+// const secret = require('../api/secrets.js').jwtSecret;
 
 const userdb = require("../database/dbConfig.js");
 
-const { authenticate } = require("../auth/authenticate");
+const { authenticate, jwtKey } = require("../auth/authenticate");
 
 
 module.exports = server => {
@@ -47,7 +47,7 @@ async function register(req, res) {
     const user = await userdb("users")
       .where({ id })
       .first();
-    const token = generateToken(user);
+    const token = jwt.sign(generateToken(user), jwtKey);
     res.status(201).json({ user, token });
   } catch (error) {
     res.status(500).json({ error: `Error while registering user: ${error}` });
@@ -71,8 +71,7 @@ async function login(req, res) {
       res
         .status(200)
         .json({ message: `Welcome ${user.username} Your're logged in`, token });
-        console.log(res);
-        localStorage.setItem('jsonWebToken', res.data.token);
+        // console.log(res);        
     } else {
       res
         .status(401)
@@ -111,5 +110,5 @@ generateToken = ({ id, username }) => {
   const options = {
     expiresIn: "1d"
   };
-  return jwt.sign(payload, secret, options);
+  return jwt.sign(payload, jwtKey, options);
 };
